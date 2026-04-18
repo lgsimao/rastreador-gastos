@@ -359,9 +359,17 @@ function setupNavigation() {
 }
 
 function navigate(sectionId) {
+  // Sidebar (desktop)
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.section === sectionId);
   });
+
+  // Bottom nav (mobile)
+  document.querySelectorAll('.bottom-nav-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.section === sectionId);
+  });
+
+  // Seções
   document.querySelectorAll('.section').forEach(sec => {
     sec.classList.toggle('active', sec.id === sectionId);
   });

@@ -699,36 +699,150 @@ select {
   to   { transform: none; opacity: 1; }
 }
 
-/* ─── RESPONSIVE ────────────────────────────────────────── */
-@media (max-width: 900px) {
+/* ─── BOTTOM NAV (mobile only) ──────────────────────────── */
+.bottom-nav {
+  display: none;
+}
+
+/* ─── RESPONSIVE — Tablet ───────────────────────────────── */
+@media (max-width: 960px) {
   .charts-grid { grid-template-columns: 1fr; }
+  :root { --sidebar-width: 200px; }
 }
 
-@media (max-width: 700px) {
-  :root { --sidebar-width: 60px; }
+/* ─── RESPONSIVE — Mobile ───────────────────────────────── */
+@media (max-width: 640px) {
 
-  .sidebar-logo h2,
-  .sidebar-logo span,
-  .logo-icon + h2,
-  .nav-item span,
-  .sidebar-footer,
-  .user-info,
-  .user-email { display: none; }
+  /* Esconde sidebar completamente */
+  .sidebar { display: none; }
 
-  .logo-icon { margin-bottom: 0; }
-  .sidebar-logo { padding: 16px 10px; text-align: center; }
+  /* Conteúdo ocupa tela inteira */
+  .main-content {
+    margin-left: 0;
+    padding-bottom: 70px; /* espaço para bottom nav */
+  }
 
-  .nav-item { justify-content: center; padding: 12px; }
+  /* Header compacto */
+  .page-header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-  .content-area { padding: 14px 16px; }
-  .page-header  { padding: 12px 16px; }
+  .page-header h1 { font-size: 17px; }
 
-  .form-grid { grid-template-columns: 1fr; }
+  .header-meta {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
 
-  .cards-grid { grid-template-columns: 1fr 1fr; }
-}
+  .month-selector label { display: none; }
 
-@media (max-width: 480px) {
-  .cards-grid { grid-template-columns: 1fr; }
-  .header-meta { flex-wrap: wrap; gap: 8px; }
+  .month-selector select {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .header-meta .btn {
+    font-size: 12px;
+    padding: 7px 12px;
+  }
+
+  /* Content area */
+  .content-area { padding: 14px 12px; }
+
+  /* Cards — 2 colunas no mobile */
+  .cards-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .card { padding: 14px; }
+  .card-value { font-size: 20px; }
+  .card-label { font-size: 10px; }
+
+  /* Gráficos empilhados */
+  .charts-grid { grid-template-columns: 1fr; gap: 12px; }
+  .chart-container { height: 180px; }
+
+  /* Formulário — 1 coluna */
+  .form-card { padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; gap: 12px; }
+  .form-title { font-size: 16px; margin-bottom: 16px; }
+
+  /* Lista de gastos */
+  .expense-item { padding: 10px 12px; gap: 10px; }
+  .expense-icon { width: 34px; height: 34px; font-size: 15px; }
+  .expense-desc { font-size: 13px; }
+  .expense-valor { font-size: 14px; }
+
+  /* Filtros */
+  .filter-bar { gap: 5px; }
+  .filter-btn { font-size: 11px; padding: 5px 10px; }
+
+  /* Cartão de crédito */
+  .credit-card-visual { padding: 20px; max-width: 100%; }
+  .credit-card-total { font-size: 28px; }
+
+  /* Configurações */
+  .config-form { padding: 16px; }
+  .config-group { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .config-input { width: 100%; text-align: left; }
+  .danger-zone { padding: 14px; }
+  .danger-zone-action { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .btn-danger-solid { width: 100%; text-align: center; }
+
+  /* Modal */
+  .modal-box { padding: 24px 18px; }
+  .modal-actions { flex-direction: column; }
+  .modal-actions .btn { width: 100%; justify-content: center; }
+
+  /* Toast */
+  .toast { left: 12px; right: 12px; bottom: 80px; max-width: 100%; }
+
+  /* Barra de navegação inferior */
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    z-index: 200;
+    box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    padding: 4px 0;
+    padding-bottom: env(safe-area-inset-bottom, 4px);
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 4px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .bottom-nav-item .bnav-icon { font-size: 20px; line-height: 1; }
+  .bottom-nav-item .bnav-label { font-size: 9.5px; }
+
+  .bottom-nav-item.active {
+    color: var(--primary);
+  }
+
+  .bottom-nav-item.active .bnav-icon {
+    transform: translateY(-2px);
+    transition: transform 0.15s;
+  }
 }
