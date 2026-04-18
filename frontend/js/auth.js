@@ -2,7 +2,7 @@
    AUTH.JS — Lógica da página de login / cadastro
    ═══════════════════════════════════════════════════════════ */
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = '/api';
 
 // ─── Troca de aba ────────────────────────────────────────────
 function switchTab(tab) {

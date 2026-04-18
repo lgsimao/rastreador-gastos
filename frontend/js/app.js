@@ -2,7 +2,7 @@
    APP.JS — Estado, API, Formulário, Navegação, Auth
    ═══════════════════════════════════════════════════════════ */
 
-const API_BASE = 'http://localhost:3001/api';
+const API_BASE = '/api';
 
 // ─── Verificação de autenticação ─────────────────────────────
 // Redireciona para login se não houver token
