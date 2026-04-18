@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rastreador de Gastos — Entrar</title>
+  <link rel="stylesheet" href="css/login.css" />
+</head>
+<body>
+
+<div class="auth-page">
+
+  <!-- Lado esquerdo — brand -->
+  <div class="auth-brand">
+    <div class="brand-content">
+      <div class="brand-icon">💰</div>
+      <h1>Rastreador<br/>Inteligente<br/>de Gastos</h1>
+      <p>Controle suas finanças pessoais de forma simples, visual e inteligente.</p>
+
+      <ul class="brand-features">
+        <li>📊 Dashboard com gráficos em tempo real</li>
+        <li>🔔 Alertas automáticos de limite</li>
+        <li>💡 Sugestões de economia personalizadas</li>
+        <li>💳 Controle de crédito e fatura</li>
+        <li>📅 Histórico por mês e categoria</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Lado direito — formulário -->
+  <div class="auth-form-area">
+    <div class="auth-card">
+
+      <!-- Abas Login / Cadastro -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">
+          Entrar
+        </button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">
+          Criar Conta
+        </button>
+      </div>
+
+      <!-- ─── FORMULÁRIO LOGIN ─── -->
+      <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="login-email" placeholder="seu@email.com"
+                 autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-password">
+            <input type="password" id="login-senha" placeholder="Sua senha"
+                   autocomplete="current-password" required />
+            <button type="button" class="toggle-pass" onclick="togglePassword('login-senha', this)">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div id="login-error" class="auth-error" style="display:none"></div>
+
+        <button type="submit" class="btn-auth" id="btn-login">
+          <span class="btn-text">Entrar</span>
+          <span class="btn-loader" style="display:none">⏳</span>
+        </button>
+
+        <p class="auth-switch">
+          Não tem conta?
+          <a href="#" onclick="switchTab('register')">Criar conta grátis</a>
+        </p>
+      </form>
+
+      <!-- ─── FORMULÁRIO CADASTRO ─── -->
+      <form id="form-register" class="auth-form" onsubmit="handleRegister(event)" style="display:none">
+        <div class="form-group">
+          <label>Nome completo</label>
+          <input type="text" id="reg-nome" placeholder="Como prefere ser chamado(a)"
+                 autocomplete="name" required />
+        </div>
+
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="reg-email" placeholder="seu@email.com"
+                 autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-password">
+            <input type="password" id="reg-senha" placeholder="Mínimo 6 caracteres"
+                   autocomplete="new-password" required minlength="6" />
+            <button type="button" class="toggle-pass" onclick="togglePassword('reg-senha', this)">
+              👁️
+            </button>
+          </div>
+          <div class="password-strength" id="password-strength"></div>
+        </div>
+
+        <div class="form-group">
+          <label>Confirmar senha</label>
+          <div class="input-password">
+            <input type="password" id="reg-confirma" placeholder="Repita a senha"
+                   autocomplete="new-password" required />
+            <button type="button" class="toggle-pass" onclick="togglePassword('reg-confirma', this)">
+              👁️
+            </button>
+          </div>
+        </div>
+
+        <div id="register-error" class="auth-error" style="display:none"></div>
+
+        <button type="submit" class="btn-auth" id="btn-register">
+          <span class="btn-text">Criar Conta</span>
+          <span class="btn-loader" style="display:none">⏳</span>
+        </button>
+
+        <p class="auth-note">
+          🎁 Ao criar a conta, você ganha dados de exemplo para explorar o sistema.
+        </p>
+
+        <p class="auth-switch">
+          Já tem conta? <a href="#" onclick="switchTab('login')">Entrar</a>
+        </p>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+</body>
+</html>

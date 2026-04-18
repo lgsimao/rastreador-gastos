@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rastreador Inteligente de Gastos</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SIDEBAR ════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">💰</div>
+    <h2>Rastreador<br/>de Gastos</h2>
+    <span>Controle financeiro pessoal</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-item active" data-section="dashboard">
+      <span class="icon">📊</span>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-section="adicionar">
+      <span class="icon">➕</span>
+      <span>Adicionar Gasto</span>
+    </button>
+    <button class="nav-item" data-section="lista">
+      <span class="icon">📋</span>
+      <span>Meus Gastos</span>
+    </button>
+    <button class="nav-item" data-section="credito">
+      <span class="icon">💳</span>
+      <span>Crédito</span>
+    </button>
+    <button class="nav-item" data-section="alertas">
+      <span class="icon">🔔</span>
+      <span>Alertas</span>
+    </button>
+    <button class="nav-item" data-section="configuracoes">
+      <span class="icon">⚙️</span>
+      <span>Configurações</span>
+    </button>
+  </nav>
+
+  <!-- Usuário logado + botão logout -->
+  <div class="sidebar-user">
+    <div class="user-avatar" id="user-avatar">?</div>
+    <div class="user-info">
+      <div class="user-name" id="user-name">Carregando...</div>
+      <div class="user-email" id="user-email"></div>
+    </div>
+    <button class="btn-logout" onclick="logout()" title="Sair">⏏️</button>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════ CONTEÚDO PRINCIPAL ═════════════════════════ -->
+<main class="main-content">
+
+  <!-- Header fixo -->
+  <header class="page-header">
+    <h1 id="page-title">Dashboard</h1>
+    <div class="header-meta">
+      <div class="month-selector">
+        <label style="font-size:13px; color:var(--text-muted); font-weight:600">Período:</label>
+        <select id="select-mes"></select>
+        <select id="select-ano"></select>
+      </div>
+      <button class="btn btn-primary" onclick="navigate('adicionar')" style="padding:8px 14px; font-size:13px;">
+        + Novo Gasto
+      </button>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <!-- ─────────────────── DASHBOARD ─────────────────── -->
+    <section id="dashboard" class="section active">
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-label">💸 Total do Mês</div>
+          <div class="card-value danger" id="card-total-mes">R$ 0,00</div>
+          <div class="card-sub">gastos no período</div>
+        </div>
+        <div class="card">
+          <div class="card-label">💳 Crédito</div>
+          <div class="card-value primary" id="card-credito">R$ 0,00</div>
+          <div class="card-sub">fatura estimada</div>
+        </div>
+        <div class="card">
+          <div class="card-label">🏦 Saldo Restante</div>
+          <div class="card-value success" id="card-saldo">R$ 0,00</div>
+          <div class="card-sub">baseado no saldo inicial</div>
+        </div>
+        <div class="card">
+          <div class="card-label">🏆 Maior Categoria</div>
+          <div class="card-value" id="card-top-categoria" style="font-size:20px">—</div>
+          <div class="card-sub" id="card-top-categoria-sub"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px; padding:16px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span style="font-size:13px; font-weight:600; color:var(--text-muted)">LIMITE MENSAL</span>
+          <span id="limite-label" style="font-size:13px; color:var(--text-muted)"></span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="limite-progress" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3>📈 Gastos por Categoria</h3>
+          <div class="chart-container">
+            <canvas id="chart-categorias"></canvas>
+          </div>
+          <div class="category-list" id="category-list"></div>
+        </div>
+        <div class="chart-card">
+          <h3>📅 Gastos por Dia</h3>
+          <div class="chart-container">
+            <canvas id="chart-tendencia"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─────────────────── ADICIONAR GASTO ─────────────────── -->
+    <section id="adicionar" class="section">
+      <div class="form-card">
+        <div class="form-title">➕ Registrar Novo Gasto</div>
+
+        <form id="form-gasto" autocomplete="off">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="gasto-valor">Valor (R$) *</label>
+              <input type="number" id="gasto-valor" placeholder="0,00"
+                     step="0.01" min="0.01" required />
+            </div>
+
+            <div class="form-group">
+              <label for="gasto-data">Data *</label>
+              <input type="date" id="gasto-data" required />
+            </div>
+
+            <div class="form-group">
+              <label for="gasto-categoria">Categoria *</label>
+              <select id="gasto-categoria" required>
+                <option value="">Selecione...</option>
+                <option value="alimentacao">🍽️ Alimentação</option>
+                <option value="transporte">🚗 Transporte</option>
+                <option value="lazer">🎮 Lazer</option>
+                <option value="contas">📄 Contas</option>
+                <option value="outros">📦 Outros</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="gasto-pagamento">Forma de Pagamento *</label>
+              <select id="gasto-pagamento" required>
+                <option value="">Selecione...</option>
+                <option value="dinheiro">💵 Dinheiro</option>
+                <option value="debito">💳 Débito</option>
+                <option value="credito">💳 Crédito</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="gasto-descricao">Descrição</label>
+              <input type="text" id="gasto-descricao"
+                     placeholder="Ex: Almoço no restaurante, Uber para o trabalho..." />
+            </div>
+
+          </div>
+
+          <div style="margin-top:20px; display:flex; gap:12px; align-items:center;">
+            <button type="submit" class="btn btn-primary">💾 Adicionar Gasto</button>
+            <button type="reset" class="btn btn-outline">✕ Limpar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ─────────────────── LISTA DE GASTOS ─────────────────── -->
+    <section id="lista" class="section">
+      <div class="list-header">
+        <h2>📋 Meus Gastos</h2>
+        <span id="gastos-count" style="font-size:13px; color:var(--text-muted)"></span>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-categoria="todos"        onclick="setFiltro('todos')">Todos</button>
+        <button class="filter-btn" data-categoria="alimentacao" onclick="setFiltro('alimentacao')">🍽️ Alimentação</button>
+        <button class="filter-btn" data-categoria="transporte"  onclick="setFiltro('transporte')">🚗 Transporte</button>
+        <button class="filter-btn" data-categoria="lazer"       onclick="setFiltro('lazer')">🎮 Lazer</button>
+        <button class="filter-btn" data-categoria="contas"      onclick="setFiltro('contas')">📄 Contas</button>
+        <button class="filter-btn" data-categoria="outros"      onclick="setFiltro('outros')">📦 Outros</button>
+      </div>
+
+      <div class="expense-list" id="gastos-list">
+        <div class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <p>Carregando gastos...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── CARTÃO DE CRÉDITO ─────────────────── -->
+    <section id="credito" class="section">
+      <h2 style="font-size:18px; font-weight:700; margin-bottom:20px">💳 Cartão de Crédito</h2>
+
+      <div class="credit-card-visual">
+        <div class="credit-card-label">FATURA DO MÊS</div>
+        <div class="credit-card-total" id="credito-total">R$ 0,00</div>
+        <div class="credit-card-month" id="credito-mes-label">Período atual</div>
+        <div class="credit-card-footer">
+          <span class="credit-card-count" id="credito-count">0 compras</span>
+          <span style="font-size:24px; opacity:0.7">💳</span>
+        </div>
+      </div>
+
+      <h3 style="font-size:15px; font-weight:700; margin-bottom:12px; color:var(--text-muted)">COMPRAS NO CRÉDITO</h3>
+      <div class="expense-list" id="gastos-credito-lista"></div>
+    </section>
+
+    <!-- ─────────────────── ALERTAS & SUGESTÕES ─────────────────── -->
+    <section id="alertas" class="section">
+      <h2 style="font-size:18px; font-weight:700; margin-bottom:16px">🔔 Alertas Financeiros</h2>
+      <div class="alerts-container" id="alertas-container"></div>
+
+      <h2 class="suggestions-title">💡 Sugestões de Economia</h2>
+      <div id="sugestoes-container"></div>
+    </section>
+
+    <!-- ─────────────────── CONFIGURAÇÕES ─────────────────── -->
+    <section id="configuracoes" class="section">
+
+      <div class="config-form">
+        <h3>⚙️ Parâmetros do Sistema</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px">
+          Defina seu saldo inicial e os limites de gasto por categoria para ativar alertas automáticos.
+        </p>
+
+        <form id="form-config">
+          <div class="config-section-title">💰 Saldo e Limite Geral</div>
+
+          <div class="config-group">
+            <div>
+              <div class="config-label">Saldo Inicial do Mês</div>
+              <div class="config-hint">Sua renda ou valor disponível</div>
+            </div>
+            <input type="number" id="config-saldo_inicial" class="config-input" min="0" step="0.01" />
+          </div>
+
+          <div class="config-group">
+            <div>
+              <div class="config-label">Limite Mensal Total</div>
+              <div class="config-hint">Alerta quando esse valor for atingido</div>
+            </div>
+            <input type="number" id="config-limite_mensal" class="config-input" min="0" step="0.01" />
+          </div>
+
+          <div class="config-section-title" style="margin-top:20px">📂 Limites por Categoria</div>
+
+          <div class="config-group">
+            <div><div class="config-label">🍽️ Alimentação</div><div class="config-hint">Limite mensal</div></div>
+            <input type="number" id="config-limite_alimentacao" class="config-input" min="0" step="0.01" />
+          </div>
+          <div class="config-group">
+            <div><div class="config-label">🚗 Transporte</div><div class="config-hint">Limite mensal</div></div>
+            <input type="number" id="config-limite_transporte" class="config-input" min="0" step="0.01" />
+          </div>
+          <div class="config-group">
+            <div><div class="config-label">🎮 Lazer</div><div class="config-hint">Limite mensal</div></div>
+            <input type="number" id="config-limite_lazer" class="config-input" min="0" step="0.01" />
+          </div>
+          <div class="config-group">
+            <div><div class="config-label">📄 Contas</div><div class="config-hint">Limite mensal</div></div>
+            <input type="number" id="config-limite_contas" class="config-input" min="0" step="0.01" />
+          </div>
+          <div class="config-group">
+            <div><div class="config-label">📦 Outros</div><div class="config-hint">Limite mensal</div></div>
+            <input type="number" id="config-limite_outros" class="config-input" min="0" step="0.01" />
+          </div>
+
+          <div style="margin-top:20px;">
+            <button type="submit" class="btn btn-primary">💾 Salvar Configurações</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ─── ZONA DE PERIGO ─── -->
+      <div class="danger-zone">
+        <div class="danger-zone-header">
+          <span class="danger-zone-icon">⚠️</span>
+          <div>
+            <h3>Zona de Perigo</h3>
+            <p>Ações irreversíveis — tenha certeza antes de continuar.</p>
+          </div>
+        </div>
+
+        <div class="danger-zone-action">
+          <div>
+            <div class="danger-action-title">🗑️ Zerar todos os gastos</div>
+            <div class="danger-action-desc">Remove permanentemente todos os gastos registrados. Os limites e configurações são mantidos.</div>
+          </div>
+          <button class="btn btn-danger-solid" onclick="resetAllGastos()">
+            Zerar Tudo
+          </button>
+        </div>
+
+        <div class="danger-zone-action">
+          <div>
+            <div class="danger-action-title">🚪 Sair da conta</div>
+            <div class="danger-action-desc">Encerra a sessão e volta para a tela de login.</div>
+          </div>
+          <button class="btn btn-outline" onclick="logout()">
+            Sair
+          </button>
+        </div>
+      </div>
+
+    </section>
+  </div>
+</main>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Modal de confirmação "Zerar Tudo" -->
+<div id="modal-reset" class="modal-overlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-icon">🗑️</div>
+    <h3>Zerar todos os gastos?</h3>
+    <p>Esta ação é <strong>irreversível</strong>. Todos os <span id="modal-count">seus</span> gastos serão apagados permanentemente.</p>
+    <p style="margin-top:8px; color:var(--text-muted); font-size:13px">As configurações de limites serão mantidas.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-danger-solid" id="btn-confirmar-reset" onclick="confirmarReset()">
+        Sim, apagar tudo
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/alertas.js"></script>
+<script src="js/sugestoes.js"></script>
+</body>
+</html>
